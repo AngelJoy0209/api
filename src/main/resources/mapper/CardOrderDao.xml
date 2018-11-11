@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.jiayou.dao.CardOrderDao">
+
+	<insert id="save" parameterType="io.jiayou.entity.coupon.po.CardOrderEntity">
+		INSERT INTO tb_card_order 
+		(
+			order_no,
+			cust_id,
+			event_id,
+			order_belong,
+			unit_price,
+			amount,
+			total_price,
+			status,
+			create_time,
+			payment_type
+		)VALUES(
+			#{orderNo},
+			#{custId},
+			#{eventId},
+			#{orderBelong},
+			#{unitPrice},
+			#{amount},
+			#{totalPrice},
+			#{status},
+			sysdate,
+			#{paymentType}
+		)
+	</insert>
+	
+	<update id="updateByOrderNo" parameterType="io.jiayou.entity.coupon.po.CardOrderEntity">
+		update 
+			tb_card_order 
+		set 
+			status = ${status},
+			out_order_no = #{outOrderNo},
+			payment_time = #{paymentTime}
+		where
+			order_no = #{orderNo}
+	</update>
+	
+	<select id="getCardOrder" parameterType="io.jiayou.entity.coupon.po.CardOrderEntity" resultType="io.jiayou.entity.coupon.po.CardOrderEntity">
+		SELECT
+			order_no AS orderNo,
+			total_price AS totalPrice,
+			status AS status,
+			cust_id AS custId,
+			event_id AS eventId,
+			unit_price AS unitPrice,
+			amount AS amount,
+			out_order_no AS outOrderNo,
+			payment_type AS paymentType
+		FROM
+			tb_card_order 
+		WHERE
+			order_no = #{orderNo}
+	</select>
+	
+	
+	
+
+</mapper>

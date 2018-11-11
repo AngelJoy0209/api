@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.jiayou.dao.ProveniceDao">
+
+	<resultMap type="io.jiayou.entity.coupon.vo.ProveniceEntity" id="proveniceInfoMap">
+		<result property="lrgnCd" column="lrgn_cd"/>
+        <result property="lrgnNm" column="lrgn_nm"/>
+	</resultMap>
+	
+	<resultMap type="io.jiayou.entity.coupon.vo.CityEntity" id="cityInfoMap">
+		<result property="mrgnCd" column="mrgn_cd"/>
+        <result property="mrgnNm" column="mrgn_nm"/>
+	</resultMap>
+	
+	<resultMap type="io.jiayou.entity.coupon.vo.AreaEntity" id="areaInfoMap">
+		<result property="srgnCd" column="srgn_cd"/>
+        <result property="srgnNm" column="srgn_nm"/>
+	</resultMap>
+
+	<select id="getProveniceList"  parameterType="io.jiayou.entity.coupon.vo.ProveniceEntity" resultMap="proveniceInfoMap">
+		select * from tb_az018  where vl_yn = 'Y'
+	</select>
+	
+	<select id="getCityList" parameterType="io.jiayou.entity.coupon.vo.CityEntity"  resultMap="cityInfoMap">
+		select * from tb_az019  where vl_yn = 'Y' and LRGN_CD = #{lrgnCd}
+	</select>
+	
+	<select id="getAreaList" parameterType="io.jiayou.entity.coupon.vo.AreaEntity"   resultMap="areaInfoMap">
+		select * from tb_az016  where vl_yn = 'Y' and MRGN_CD = #{mrgnCd} and LRGN_CD = #{lrgnCd}
+	</select>
+	
+	<select id="getAreaListByProvenice" parameterType="io.jiayou.entity.coupon.vo.AreaEntity"   resultMap="areaInfoMap">
+		select * from tb_az016  where vl_yn = 'Y' and LRGN_CD = #{lrgnCd}
+	</select>
+	
+	<select id="getNameByLrgnCd" parameterType="io.jiayou.entity.coupon.vo.ProveniceEntity" resultMap="proveniceInfoMap">
+		select 
+		lrgn_nm,
+		lrgn_cd
+		from 
+		tb_az018 
+		where 
+		lrgn_cd = ${lrgnCd}
+	</select>
+	
+	<select id="getNameByMrgnCd" parameterType="io.jiayou.entity.coupon.vo.CityEntity" resultMap="cityInfoMap">
+		select 
+		mrgn_nm,
+		mrgn_cd
+		from 
+		tb_az019 
+		where 
+		lrgn_cd = ${lrgnCd} and mrgn_cd = #{mrgnCd}
+	</select>
+	
+	<select id="getNameBySrgnCd" parameterType="io.jiayou.entity.coupon.vo.AreaEntity" resultMap="areaInfoMap">
+		select 
+		srgn_nm,
+		srgn_cd
+		from 
+		tb_az016 
+		where 
+		srgn_cd = ${srgnCd} and mrgn_cd = #{mrgnCd} and lrgn_cd = ${lrgnCd}
+	</select>
+
+</mapper>

@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource    
+    druid:
+      first:  #数据源1
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://172.18.18.63:3306/salesdb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+        username: jybd
+        password: jybd
+      second:  #数据源2
+        driverClassName: oracle.jdbc.driver.OracleDriver
+        url: jdbc:oracle:thin:@192.168.210.167:1521:lndtest
+        username: shop88
+        password: shop88
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000      
+#      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #login-username: admin
+        #login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true     
+      use-global-data-source-stat: true

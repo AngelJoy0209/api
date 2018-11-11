@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.jiayou.dao.EventInfoDao">
+
+	<resultMap type="io.jiayou.entity.coupon.vo.EventInfoEntity" id="eventInfoMap">
+		<result property="eventId" column="event_id"/>
+        <result property="eventDesc" column="detail_desc"/>
+        <result property="eventNm" column="event_nm"/>
+        <result property="isManyOrder" column="is_manyjjg"/>
+        <result property="startTime" column="fr_date"/>
+        <result property="endTime" column="end_date"/>
+        <result property="faceValue" column="dis_amt"/>
+        <result property="buyAmt" column="buy_amt"/>
+        <result property="frDate" column="ljq_fr_date"/>
+        <result property="endDate" column="ljq_end_date"/>
+        <result property="lowAmt" column="low_amt"/>
+        <result property="eventCd" column="event_cd"/>
+        <result property="eventTitle" column="event_desc"/>
+	</resultMap>
+	
+	
+
+	<select id="getEventById" parameterType="io.jiayou.entity.coupon.vo.EventInfoEntity" resultMap="eventInfoMap">
+		select 
+		a6.event_id, 
+		a6.detail_desc,
+		a6.event_nm,
+		a6.is_manyjjg,
+		a6.fr_date,
+		a6.end_date,
+		a15.dis_amt,
+		a15.buy_amt,
+		a6.event_cd,
+		a6.event_desc
+		from tb_ag006 a6 left join tb_ag015 a15 on a6.event_id = a15.event_id where a6.is_buy = 'Y' and a6.event_id = #{eventId}
+	</select>
+	
+	<select id="getLjqInfoByEventId" parameterType="int" resultMap="eventInfoMap">
+		select g15.dis_amt,g15.fr_date as ljq_fr_date,g15.end_date as ljq_end_date,g15.low_amt
+		  from tb_ag015 g15
+		    where g15.event_id = ${eventId}
+	</select>
+	
+	<select id="getMaxSeq" resultType="java.lang.Integer">
+		select nvl(max(lj_seq),0) as seq from tb_ag011 where cust_id = #{custId} and event_id = #{eventId}
+	</select>
+	
+
+</mapper>

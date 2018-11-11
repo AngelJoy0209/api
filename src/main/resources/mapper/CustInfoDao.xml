@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.jiayou.dao.CustInfoDao">
+
+	<resultMap type="io.jiayou.entity.coupon.vo.CustInfoEntity" id="custInfoMap">
+		<result property="custId" column="cust_id"/>
+		<result property="custNm" column="cust_nm"/>
+        <result property="lrgnCd" column="lrgn_cd"/>
+        <result property="mrgnCd" column="mrgn_cd"/>
+        <result property="srgnCd" column="srgn_cd"/>
+        <result property="areaDetail" column="addr_2"/>
+	</resultMap>
+	
+	
+
+	<select id="getCustInfoById" parameterType="io.jiayou.entity.coupon.vo.CustInfoEntity" resultMap="custInfoMap">
+		select 
+		c1.cust_id,
+		c1.cust_nm,
+		c2.lrgn_cd,
+		c2.mrgn_cd,
+		c2.srgn_cd,
+		c2.addr_2
+		from 
+		tb_ac001 c1 left join tb_ac002 c2 on c1.cust_id = c2.cust_id and c1.cust_dlv_addr_seq = c2.dlv_addr_seq 
+		where 
+		c1.cust_id = ${custId}
+	</select>
+	
+	<select id="getCustlvlByCustid" parameterType="io.jiayou.entity.coupon.vo.CustInfoEntity" resultType="String">
+		select c.cust_lvl_cd AS custLvlCd from tb_ac001 c where c.cust_id = ${custId}
+	</select>
+	
+	<select id="validateCustAddr" parameterType="io.jiayou.entity.coupon.vo.CustInfoEntity" resultType="int">
+		select count(1)
+		  from tb_ac002 c2
+		 where c2.cust_id = #{custId}
+		   and c2.lrgn_cd = #{lrgnCd}
+		   and c2.mrgn_cd = #{mrgnCd}
+		   and c2.srgn_cd = #{srgnCd}
+		   and c2.addr_2 = #{areaDetail}
+	</select>
+	
+	<insert id="addCustAddr" parameterType="io.jiayou.form.RegisterCustForm">
+		insert into tb_ac002
+		  (cust_id,
+		   dlv_addr_seq,
+		   rcver_nm,
+		   hp_teld,
+		   hp_telh,
+		   hp_teln,
+		   addr_1,
+		   addr_2,
+		   etr_id,
+		   etr_date,
+		   vl_yn,
+		   lrgn_cd,
+		   mrgn_cd,
+		   srgn_cd)
+		values
+		  (#{cust_id},
+		   (select nvl(max(dlv_addr_seq),0) + 1 from tb_ac002 where cust_id = #{cust_id}),
+		   #{cust_nm},
+		   #{hp_teld},
+		   #{hp_telh},
+		   #{hp_teln},
+		   #{addr_1},
+		   #{addr_2},
+		   'event',
+		   sysdate,
+		   'Y',
+		   #{lrgn_cd},
+		   #{mrgn_cd},
+		   #{srgn_cd})
+	</insert>
+	
+	<insert id="addCustInfo" parameterType="io.jiayou.form.RegisterCustForm">
+	    <selectKey resultType="java.lang.Integer" keyProperty="cust_id" order="BEFORE">
+	        SELECT sq_cust_id.nextval as cust_id from dual
+	    </selectKey>
+		insert into tb_ac001
+		  (cust_id,
+		   cust_nm,
+		   sex_cd,
+		   cust_lvl_cd,
+		   cust_dlv_addr_seq,
+		   addr_1,
+		   addr_2,
+		   hp_teld,
+		   hp_telh,
+		   hp_teln,
+		   etr_id,
+		   etr_date,
+		   lrgn_cd,
+		   mrgn_cd,
+		   srgn_cd)
+		values
+		  (#{cust_id},
+		   #{cust_nm},
+		   #{sex_cd},
+		   10,
+		   1,
+		   #{addr_1},
+		   #{addr_2},
+		   #{hp_teld},
+		   #{hp_telh},
+		   #{hp_teln},
+		   'event',
+		   sysdate,
+		   #{lrgn_cd},
+		   #{mrgn_cd},
+		   #{srgn_cd})    	
+	</insert>
+	
+	<insert id="addCustLjq" parameterType="io.jiayou.entity.coupon.vo.CustCouponEntity">
+		insert into tb_ag011
+		  (event_id, cust_id, lj_seq, lj_amt, sy_vl, vl_yn, etr_id, etr_date,fr_date,end_date,ord_amt)
+		values
+		  (#{eventId}, #{custId}, #{ljseq}, #{ljAmt}, 'N', 'Y', 'event', sysdate,#{frDate},#{endDate},#{lowAmt})
+	</insert>
+	
+	<select id="validateCanBuy" resultType="String">
+		select decode(a.flag,
+		              'Y',
+		              'Y',
+		              (case
+		                when b.cnt > 0 then
+		                 'N'
+		                else
+		                 'Y'
+		              end)) can_do
+		  from (select nvl(g6.is_manyjjg, 'Y') flag
+		          from tb_ag006 g6
+		         where g6.event_id = #{eventId}) a,
+		       (select count(1) cnt from tb_ag011 g11 where g11.cust_id = #{custId} and g11.event_id = #{eventId}) b
+	</select>
+	
+	<select id="validateCanBuyd" resultType="int">
+		select count(1) cnt
+		  from tb_ag006_cust gc
+		 where gc.event_id = #{eventId}
+		   and gc.cust_id = #{custId}
+		   and gc.vl_yn = 'Y'
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.jiayou.dao.CustCouponDao">
+
+	<!-- 礼金券 -->
+	<insert id="addCustLjq" parameterType="io.jiayou.entity.coupon.vo.CustCouponEntity">
+		insert into tb_ag011
+		  (event_id, cust_id, lj_seq, lj_amt, sy_vl, vl_yn, etr_id, etr_date,fr_date,end_date,ord_amt,dis_type)
+		values
+		  (#{eventId}, #{custId}, #{ljseq}, #{ljAmt}, 'N', 'Y', 'event', sysdate,#{frDate},#{endDate},#{lowAmt},#{disType})
+	</insert>
+	
+	<!-- 折扣券 -->
+	<insert id="addCustZkq" parameterType="io.jiayou.entity.coupon.vo.CustCouponEntity">
+		insert into tb_ag006_cust
+		  (event_id, cust_id, vl_yn, etr_id, etr_date)
+		values
+		  (#{eventId}, #{custId},'Y', 'app', sysdate)
+	</insert>
+	
+	<!-- 查询礼金类型给值 -->
+	<select id="getEventDetail" resultType="io.jiayou.entity.coupon.vo.CustCouponEntity">
+		SELECT 
+			g15.dis_type AS disType,
+			g15.dis_amt AS ljAmt,
+			g15.fr_date as frDate,
+			g15.end_date as endDate,
+			g15.low_amt AS lowAmt
+		FROM 
+			tb_ag015 g15
+		WHERE 
+			g15.event_id = #{eventId}
+	</select>
+
+</mapper>

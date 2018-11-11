@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.jiayou.dao.CodeDao">
+
+	<insert id="save" parameterType="io.jiayou.entity.coupon.po.SmsMsgCodeEntity">
+		INSERT INTO cc_smsmsg 
+		(
+			MSG_ID,
+			RCPT_NO,
+			CONTENT
+		)VALUES(
+			Sq_Msg_Id.Nextval,
+			#{phoneNo},
+			#{msg}
+		)
+	</insert>
+	
+	
+	<insert id="saveVerifiCode" parameterType="io.jiayou.entity.coupon.po.SmsMsgCodeEntity">
+		INSERT INTO tb_verifi_code 
+		(
+			code,
+			phone_no,
+			code_type,
+			create_time,
+			expiry_time
+		)VALUES(
+			#{code},
+			#{phoneNo},
+			#{codeType},
+			sysdate,
+			sysdate+180
+		)
+	</insert>
+	
+	<select id="getVerifiCode" parameterType="io.jiayou.entity.coupon.po.SmsMsgCodeEntity" resultType="io.jiayou.entity.coupon.po.SmsMsgCodeEntity">
+		select 
+			code AS code ,
+			phone_no AS phoneNo
+		from 
+			tb_verifi_code
+		<where>
+			<if test="phoneNo != null and phoneNo != ''">
+				and phone_no = #{phoneNo}
+			</if>
+			<if test="code != null and code != ''">
+				and code = #{code}
+			</if>
+			<if test="codeType != null and codeType != 0">
+				and code_type = ${codeType}
+			</if>
+			<if test="expiryTime != null and expiryTime != ''">
+				and expiry_time &lt;= #{expiryTime}
+			</if>
+		</where>
+			
+	</select>
+	
+	<select id="getCount" parameterType="io.jiayou.entity.coupon.po.SmsMsgCodeEntity" resultType="Integer">
+		select 
+			COUNT(1)
+		from 
+			tb_verifi_code
+		<where>
+			<if test="phoneNo != null and phoneNo != ''">
+				and phone_no = #{phoneNo}
+			</if>
+			<if test="codeType != null and codeType != 0">
+				and code_type = ${codeType}
+			</if>
+		</where>
+			
+	</select>
+	
+	<update id="updateByType" parameterType="io.jiayou.entity.coupon.po.SmsMsgCodeEntity">
+		update tb_verifi_code set code = #{code},create_time=sysdate,expiry_time = sysdate+180 where phone_no = #{phoneNo} 
+	</update>
+	
+
+</mapper>
